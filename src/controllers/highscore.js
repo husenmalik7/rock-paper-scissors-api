@@ -16,11 +16,35 @@ module.exports = {
       });
   },
 
-  postHighscore: (req, res) => {
+  postHighscore: async (req, res) => {
     let body = {
       username: req.body.username,
       win_streak: req.body.win_streak,
     };
+
+    let doCheckUsername = await model
+      .checkUsername(body)
+      .then((response) => {
+        console.log(response.rowCount);
+
+        if (response.rowCount) {
+          res.json({
+            status: 200,
+            msg: "username found, duplicate possibility",
+          });
+
+          return false;
+        } else {
+          return true;
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    if (!doCheckUsername) {
+      return null;
+    }
 
     model
       .postHighscore(body)

@@ -13,6 +13,22 @@ module.exports = {
     });
   },
 
+  checkUsername: (body) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "SELECT * FROM highscores WHERE username = ($1)",
+        [body.username],
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(error);
+          }
+        }
+      );
+    });
+  },
+
   postHighscore: (body) => {
     return new Promise((resolve, reject) => {
       db.query(
