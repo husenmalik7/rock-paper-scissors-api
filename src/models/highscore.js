@@ -3,13 +3,16 @@ const db = require("../config/db");
 module.exports = {
   getAllHighscore: () => {
     return new Promise((resolve, reject) => {
-      db.query("SELECT * FROM highscores", (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          reject(error);
+      db.query(
+        "SELECT * FROM highscores ORDER BY win_streak DESC",
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(error);
+          }
         }
-      });
+      );
     });
   },
 
