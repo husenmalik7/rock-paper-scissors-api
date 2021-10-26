@@ -5,10 +5,22 @@ module.exports = {
     model
       .getAllHighscore()
       .then((response) => {
+        let arr = response.rows;
+
+        for (let i = 0; i < arr.length; i++) {
+          let fullDate = new Date(arr[i].created_at);
+          let month = fullDate.toLocaleString("default", { month: "short" });
+          let date = fullDate.getDate();
+          let year = fullDate.getFullYear();
+
+          let formattedDate = date + " " + month + " " + year;
+          arr[i].created_at = formattedDate;
+        }
+
         res.json({
           status: 200,
           msg: "succes",
-          data: response.rows,
+          data: arr,
         });
       })
       .catch((err) => {
