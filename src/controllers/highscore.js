@@ -1,26 +1,76 @@
 const model = require("../models/highscore");
 
 module.exports = {
-  getAllHighscore: (_, res) => {
+  getAllHighscore: (req, res) => {
     model
       .getAllHighscore()
-      .then((response) => {
+      .then(async (response) => {
         let arr = response.rows;
 
-        for (let i = 0; i < arr.length; i++) {
-          let fullDate = new Date(arr[i].created_at);
+        let resultsPerPage = 10;
+        let numOfResults = response.rows.length;
+        let numberOfPages = Math.ceil(numOfResults / resultsPerPage);
+        let page = req.query.page ? Number(req.query.page) : 1;
+
+        if (page > numberOfPages) {
+          return res.redirect(
+            "/highscore?page=" + encodeURIComponent(numberOfPages)
+          );
+        } else if (page < 1) {
+          return res.redirect("/highscore?page=" + encodeURIComponent("1"));
+        }
+
+        let startingLimit = (page - 1) * resultsPerPage;
+
+        let arrLimitHighscore = await model
+          .getLimitHighscore(startingLimit, resultsPerPage)
+          .then((response) => {
+            return response.rows;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+
+        let iterator = page - 5 < 1 ? 1 : page - 5;
+
+        let endingLink =
+          iterator + 9 <= numberOfPages
+            ? iterator + 9
+            : page + (numberOfPages - page);
+
+        if (endingLink < page + 4) {
+          iterator -= page + 4 - numberOfPages;
+        }
+
+        // console.log({ numOfResults });
+        // console.log({ numberOfPages });
+        // console.log({ startingLimit });
+        // console.log({ page });
+        // console.log({ iterator });
+        // console.log({ endingLink });
+        // console.log("--------------");
+
+        // format date
+        for (let i = 0; i < arrLimitHighscore.length; i++) {
+          let fullDate = new Date(arrLimitHighscore[i].created_at);
           let month = fullDate.toLocaleString("default", { month: "short" });
           let date = fullDate.getDate();
           let year = fullDate.getFullYear();
 
           let formattedDate = date + " " + month + " " + year;
-          arr[i].created_at = formattedDate;
+          arrLimitHighscore[i].created_at = formattedDate;
         }
 
         res.json({
           status: 200,
           msg: "succes",
-          data: arr,
+
+          page,
+          iterator,
+          endingLink,
+          numberOfPages,
+          data: arrLimitHighscore,
+          // data: arr,
         });
       })
       .catch((err) => {

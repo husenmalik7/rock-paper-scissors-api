@@ -5,6 +5,22 @@ module.exports = {
     return new Promise((resolve, reject) => {
       db.query(
         "SELECT * FROM highscores ORDER BY win_streak DESC",
+        // "SELECT * FROM highscores ORDER BY win_streak DESC LIMIT 10 OFFSET 0",
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(error);
+          }
+        }
+      );
+    });
+  },
+
+  getLimitHighscore: (startingLimit, resultsPerPage) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        `SELECT * FROM highscores ORDER BY win_streak DESC LIMIT ${resultsPerPage} OFFSET ${startingLimit}`,
         (error, result) => {
           if (!error) {
             resolve(result);
