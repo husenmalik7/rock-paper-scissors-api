@@ -23,3 +23,12 @@ Method | endpoint
 GET | /highscore
 GET | /highscore?page=2
 POST | /highscore
+
+## Table
+### highscores
+column | type
+------------- | -------------
+id | serial
+username | text
+win_streak | integer
+created_at | date
