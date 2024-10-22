@@ -42,14 +42,6 @@ module.exports = {
           iterator -= page + 4 - numberOfPages;
         }
 
-        // console.log({ numOfResults });
-        // console.log({ numberOfPages });
-        // console.log({ startingLimit });
-        // console.log({ page });
-        // console.log({ iterator });
-        // console.log({ endingLink });
-        // console.log("--------------");
-
         // format date
         for (let i = 0; i < arrLimitHighscore.length; i++) {
           let fullDate = new Date(arrLimitHighscore[i].created_at);
